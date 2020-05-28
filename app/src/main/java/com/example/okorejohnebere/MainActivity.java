@@ -1,15 +1,23 @@
 package com.example.okorejohnebere;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,9 +32,9 @@ import com.example.okorejohnebere.adapters.FilterListAdapter;
 import com.example.okorejohnebere.custom_views.CustomListView;
 import com.example.okorejohnebere.models.CarOwnerModel;
 import com.example.okorejohnebere.models.FilterModel;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -36,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -45,11 +54,13 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     Context context;
+    @BindView(R.id.no_file_tv) TextView no_file_tv;
     @BindView(R.id.filter_listView) CustomListView filter_listView;
     FilterListAdapter filterListAdapter;
     ArrayList<FilterModel> filterList = new ArrayList<>();
     boolean noFileFound = false;
     boolean errorInCsv = false;
+    final int CODE_PERMISSION = 34;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +68,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.filter_page);
         ButterKnife.bind(this);
         context = this;
+
         filterListAdapter = new FilterListAdapter(this,filterList);
         filter_listView.getRecyclerView().setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
         filter_listView.getRecyclerView().setAdapter(filterListAdapter);
 
-
-        loadItems();
-
         requestForPermissions();
+    }
+
+    private void requestForPermissions(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context,new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            },CODE_PERMISSION);
+        }else{
+            loadItems();
+        }
+    }
+
+    public void clickBack(View v){
+        onBackPressed();
     }
 
     private void loadItems() {
@@ -82,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         try {
-                            readCsv();
+                            new FilterTask().execute();
                         } catch (Exception e) {
                             e.printStackTrace();
                             errorInCsv = true;
@@ -123,78 +148,172 @@ public class MainActivity extends AppCompatActivity {
         filterListAdapter.notifyDataSetChanged();
     }
 
-    private void readCsv() throws Exception {
-        // Read the raw csv file
-        File file = new File(Environment.getExternalStorageDirectory()+"/Decagon/car_ownsers_data.csv");
-        if(!file.exists()){
-            noFileFound = true;
-            filter_listView.hideLoading();
-            return;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==CODE_PERMISSION){
+           for(int i : grantResults){
+               if(i!=PackageManager.PERMISSION_GRANTED){
+                   Toast.makeText(context, "Read Permission is required for this App", Toast.LENGTH_SHORT).show();
+                   onBackPressed();
+                   return;
+               }
+           }
+           loadItems();
         }
-        InputStream is =  new FileInputStream(file);
-        // Reads text from character-input stream, buffering characters for efficient reading
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8")));
+    }
 
-        // Initialization
-        String line = "";
+    @SuppressLint("StaticFieldLeak")
+    class FilterTask extends AsyncTask<Void, Integer,Void> {
 
-        // Initialization
-        try {
-            // Step over headers
+        @Override
+        protected Void doInBackground(Void... voids) {
+            File file = new File(Environment.getExternalStorageDirectory()+"/Decagon/car_ownsers_data.csv");
+            if(!file.exists()){
+                noFileFound = true;
+                filter_listView.hideLoading();
+                return null;
+            }
+            InputStream is = null;
             try {
-                reader.readLine();
+                is = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            // Reads text from character-input stream, buffering characters for efficient reading
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, Charset.forName("UTF-8")));
+
+            // Initialization
+            String line = "";
+            int lineCount = 0;
+            // Initialization
+            try {
+                // Step over headers
+                try {
+                    reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // If buffer is not empty
+                while ((line = reader.readLine()) != null) {
+                    String[] data = line.split(",");
+                    // Read the data
+                    final CarOwnerModel carOwnerModel = new CarOwnerModel();
+                    carOwnerModel.setFirst_name(data[1]);
+                    carOwnerModel.setLast_name(data[2]);
+                    carOwnerModel.setEmail(data[3]);
+                    carOwnerModel.setCountry(data[4]);
+                    carOwnerModel.setCar_model(data[5]);
+                    carOwnerModel.setCar_model_year(data[6]);
+                    carOwnerModel.setCar_color(data[7]);
+                    carOwnerModel.setGender(data[8]);
+                    carOwnerModel.setJob_title(data[9]);
+                    carOwnerModel.setBio(data[10]);
+                    tryAddingToCarList(carOwnerModel);
+                    lineCount++;
+                    double percent = ((double)lineCount/65500) *100;
+                    publishProgress((int)percent);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
 
-            // If buffer is not empty
-            while ((line = reader.readLine()) != null) {
-                Log.d("MyActivity","Line: " + line);
-                // use comma as separator columns of CSV
-                String[] data = line.split(",");
-                // Read the data
-                CarOwnerModel carOwnerModel = new CarOwnerModel();
-                carOwnerModel.setFirst_name(data[1]);
-                carOwnerModel.setLast_name(data[2]);
-                carOwnerModel.setEmail(data[3]);
-                carOwnerModel.setCountry(data[4]);
-                carOwnerModel.setCar_model(data[5]);
-                carOwnerModel.setCar_model_year(data[6]);
-                carOwnerModel.setCar_color(data[7]);
-                carOwnerModel.setGender(data[8]);
-                carOwnerModel.setJob_title(data[9]);
-                carOwnerModel.setBio(data[10]);
-                tryAddingToCarList(carOwnerModel);
+        @Override
+        protected void onProgressUpdate(final Integer... values) {
+            super.onProgressUpdate(values);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int progress = values[0];
+                    progress = Math.min(progress, 100);
+                    filter_listView.setLoadingText(String.format("Loading %s%s",progress,"%"));
+                }
+            });
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            filterListAdapter.notifyDataSetChanged();
+            filter_listView.hideLoading();
+            if(noFileFound)no_file_tv.setVisibility(View.VISIBLE);
+        }
+
+        private void tryAddingToCarList(final CarOwnerModel carOwnerModel){
+            for(int i=0;i<filterList.size();i++){
+                FilterModel filterModel = filterList.get(i);
+                JSONArray countries = filterModel.getCountries();
+                JSONArray colors = filterModel.getColors();
+                String fullName = filterModel.getFullName();
+                String gender = filterModel.getGender();
+
+                if(fullName!=null) {
+                    String[] nameParts = fullName.split(" ");
+                    String firstName = carOwnerModel.getFirst_name().toLowerCase();
+                    String lastName = carOwnerModel.getLast_name().toLowerCase();
+                    boolean nameExist = false;
+                    for(String name : nameParts){
+                        if(name.trim().toLowerCase().equalsIgnoreCase(firstName)
+                           || name.trim().toLowerCase().equalsIgnoreCase(lastName)){
+                            nameExist=true;
+                            break;
+                        }
+                    }
+                    if(!nameExist)continue;
+                }
+
+                if(gender!=null) {
+                    if (!gender.toLowerCase().
+                            equalsIgnoreCase(carOwnerModel.getGender().toLowerCase())) continue;
+                }
+
+                if(countries!=null && countries.length()!=0) {
+                    boolean countryExist = false;
+                    for (int x = 0; x < countries.length(); x++) {
+                        try {
+                            String country = countries.getString(x);
+                            if (country.toLowerCase().equalsIgnoreCase(carOwnerModel.getCountry())) {
+                                countryExist = true;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (!countryExist) {
+                        continue;
+                    }
+                }
+
+                if(colors!=null && colors.length()!=0) {
+                    boolean colorExist = false;
+                    for (int x = 0; x < colors.length(); x++) {
+                        try {
+                            String color = colors.getString(x);
+                            if (color.toLowerCase().equalsIgnoreCase(carOwnerModel.getCar_color())) {
+                                colorExist = true;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (!colorExist) {
+                        continue;
+                    }
+                }
+
+                ArrayList<CarOwnerModel> carList = filterModel.getCarList();
+                carList = carList==null?new ArrayList<CarOwnerModel>():carList;
+                carList.add(carOwnerModel);
+                filterModel.setCarList(carList);
+                return;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        filter_listView.hideLoading();
-    }
-
-    private void tryAddingToCarList(CarOwnerModel carOwnerModel){
-        for(int i=0;i<filterList.size();i++){
-            FilterModel filterModel = new FilterModel();
-            
         }
     }
-
-    private void requestForPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED||
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions((Activity) context,new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                },34);
-            }
-        }
-    }
-
 
 }

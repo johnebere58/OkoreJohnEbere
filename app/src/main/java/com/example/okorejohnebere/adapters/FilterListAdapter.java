@@ -1,6 +1,8 @@
 package com.example.okorejohnebere.adapters;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +10,16 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.okorejohnebere.CarOwnersActivity;
 import com.example.okorejohnebere.R;
 import com.example.okorejohnebere.custom_views.CircleImageView;
+import com.example.okorejohnebere.models.CarOwnerModel;
 import com.example.okorejohnebere.models.FilterModel;
+import com.google.android.flexbox.FlexboxLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,7 +86,7 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
            for(int i=0;i<colors.length();i++){
                try {
                    String colorsString = colors.getString(i);
-                   int color = getViewColor(colorsString);
+                   int color = getViewColor(mContext,colorsString);
 
                    if(color!=-1) {
                        View view = View.inflate(mContext, R.layout.color_item, null);
@@ -102,9 +108,9 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
 
         }
         if((countries==null || countries.length()==0)){
-        holder.country_scroll.setVisibility(View.GONE);
+        holder.country_holder.setVisibility(View.GONE);
         }else{
-        holder.country_scroll.setVisibility(View.VISIBLE);
+        holder.country_holder.setVisibility(View.VISIBLE);
         holder.country_holder.removeAllViews();
            //inflate country and flags
             for(int i=0;i<countries.length();i++){
@@ -131,13 +137,17 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        mContext.startActivity(new Intent(mContext,CarOwnersActivity.class));
-
+                        ArrayList<CarOwnerModel> carList = filterModel.getCarList();
+                        carList = carList==null?new ArrayList<CarOwnerModel>():carList;
+                        //Toast.makeText(mContext, String.valueOf(carList.size()), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mContext, CarOwnersActivity.class);
+                        intent.putParcelableArrayListExtra("data",carList);
+                        mContext.startActivity(intent);
                     }
                 });
     }
 
-    private int getViewColor(String color){
+    public static int getViewColor(Context mContext,String color){
         if(color.equalsIgnoreCase("Green"))return mContext.getResources().getColor(R.color.green);
         if(color.equalsIgnoreCase("Violet"))return mContext.getResources().getColor(R.color.violet);
         if(color.equalsIgnoreCase("Blue"))return mContext.getResources().getColor(R.color.blue);
@@ -158,6 +168,7 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
         if(country.equalsIgnoreCase("Japan"))return mContext.getResources().getDrawable(R.mipmap.flag_japan);
         if(country.equalsIgnoreCase("Estonia"))return mContext.getResources().getDrawable(R.mipmap.flag_estonia);
         if(country.equalsIgnoreCase("Colombia"))return mContext.getResources().getDrawable(R.mipmap.flag_columbia);
+        if(country.equalsIgnoreCase("South Africa"))return mContext.getResources().getDrawable(R.mipmap.flag_southafrica);
         return null;
     }
 
@@ -177,8 +188,8 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
         @BindView(R.id.gender_tv) TextView gender_tv;
         @BindView(R.id.color_scroll) HorizontalScrollView color_scroll;
         @BindView(R.id.color_holder) LinearLayout color_holder;
-        @BindView(R.id.country_scroll) HorizontalScrollView country_scroll;
-        @BindView(R.id.country_holder) LinearLayout country_holder;
+//        @BindView(R.id.country_scroll) HorizontalScrollView country_scroll;
+        @BindView(R.id.country_holder) FlexboxLayout country_holder;
 
 
         public ViewHolder(View v) {

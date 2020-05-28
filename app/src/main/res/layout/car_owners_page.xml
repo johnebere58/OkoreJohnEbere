@@ -9,19 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/blue3"
-        android:paddingLeft="20dp"
+        android:layout_gravity="center_vertical"
         >
         <ImageView
-            android:layout_width="18dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_back"
             android:layout_gravity="center_vertical"
             android:tint="@color/white"
+            android:onClick="clickBack"
+            android:padding="15dp"
             />
-        <View
-            android:layout_width="10dp"
-            android:layout_height="1dp"
-            />
+
         <TextView
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
@@ -30,13 +29,14 @@
             android:textSize="22sp"
             android:textColor="@color/white"
             android:fontFamily="@font/baloo_bold"
+            android:id="@+id/title_tv"
             />
     </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.okorejohnebere.custom_views.CustomListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/car_owners_listView"
         >
 
-    </androidx.recyclerview.widget.RecyclerView>
+    </com.example.okorejohnebere.custom_views.CustomListView>
 </LinearLayout>
