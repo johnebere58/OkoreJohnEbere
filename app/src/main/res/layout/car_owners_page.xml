@@ -32,11 +32,11 @@
             android:fontFamily="@font/baloo_bold"
             />
     </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.okorejohnebere.custom_views.CustomListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/car_owners_listView"
         >
 
-    </androidx.recyclerview.widget.RecyclerView>
+    </com.example.okorejohnebere.custom_views.CustomListView>
 </LinearLayout>

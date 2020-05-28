@@ -132,10 +132,9 @@
                     android:layout_marginRight="10dp"
                     android:id="@+id/car_tv"
                     />
-                <com.example.okorejohnebere.custom_views.CircleImageView
+                <ImageView
                     android:layout_width="15dp"
                     android:layout_height="15dp"
-                    android:src="@color/yellow"
                     android:id="@+id/car_color"
                     />
 
@@ -158,6 +157,7 @@
                    android:orientation="vertical"
                    >
                    <TextView
+                       android:layout_marginTop="5dp"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:text="Bio"
@@ -171,7 +171,7 @@
                        android:layout_height="wrap_content"
                        android:text="I am a very good person"
                        android:textColor="@color/black"
-                       android:textSize="12sp"
+                       android:textSize="14sp"
                        android:id="@+id/bio_tv"
                        android:fontFamily="@font/baloo"
                        android:layout_marginBottom="5dp"

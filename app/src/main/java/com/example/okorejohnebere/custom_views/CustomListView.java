@@ -14,6 +14,7 @@ import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +31,7 @@ public class CustomListView extends FrameLayout {
     View emptyLayout;
     View retryLayout;
     View reloadTv;
+    TextView loading_tv;
     RecyclerView recyclerView;
     public CustomListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -49,6 +51,7 @@ public class CustomListView extends FrameLayout {
         loadingLayout = rootView.findViewById(R.id.loading_layout);
         emptyLayout = rootView.findViewById(R.id.empty_layout);
         reloadTv = rootView.findViewById(R.id.reload_tv);
+        loading_tv = rootView.findViewById(R.id.loading_tv);
 
         hideEverything();
         addView(rootView);
@@ -83,6 +86,10 @@ public class CustomListView extends FrameLayout {
             reloadTv.setVisibility(VISIBLE);
             emptyLayout.setOnClickListener(retryClicked);
         }
+    }
+
+    public void setLoadingText(String text){
+        loading_tv.setText(text);
     }
 
     public RecyclerView getRecyclerView() {

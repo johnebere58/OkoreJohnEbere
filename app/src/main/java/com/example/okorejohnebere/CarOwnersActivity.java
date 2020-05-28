@@ -3,6 +3,7 @@ package com.example.okorejohnebere;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.okorejohnebere.adapters.CarOwnerAdapter;
 import com.example.okorejohnebere.adapters.FilterListAdapter;
+import com.example.okorejohnebere.custom_views.CustomListView;
 import com.example.okorejohnebere.models.CarOwnerModel;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import butterknife.ButterKnife;
 public class CarOwnersActivity extends AppCompatActivity {
 
     Context context;
-    @BindView(R.id.car_owners_listView) RecyclerView car_owners_listView;
+    @BindView(R.id.car_owners_listView) CustomListView car_owners_listView;
     CarOwnerAdapter carOwnerAdapter;
     ArrayList<CarOwnerModel> carOwnerModels = new ArrayList<>();
 
@@ -35,14 +37,17 @@ public class CarOwnersActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         context = this;
 
-        carOwnerModels.add(new CarOwnerModel());
-        carOwnerModels.add(new CarOwnerModel());
-        carOwnerModels.add(new CarOwnerModel());
-        carOwnerModels.add(new CarOwnerModel());
-        carOwnerModels.add(new CarOwnerModel());
+        Intent i = this.getIntent();
+        ArrayList<CarOwnerModel> carList =i.getParcelableArrayListExtra("data");
+        if (carList != null) {
+            carOwnerModels.addAll(carList);
+            if(carOwnerModels.isEmpty()){
+                car_owners_listView.showEmpty(null);
+            }
+        }
         carOwnerAdapter = new CarOwnerAdapter(this,carOwnerModels);
-        car_owners_listView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
-        car_owners_listView.setAdapter(carOwnerAdapter);
+        car_owners_listView.getRecyclerView().setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
+        car_owners_listView.getRecyclerView().setAdapter(carOwnerAdapter);
 
     }
 

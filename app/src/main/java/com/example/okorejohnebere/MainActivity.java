@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         try {
                             new FilterTask().execute();
+//                            filterListAdapter.notifyDataSetChanged();
+//                            filter_listView.hideLoading();
                         } catch (Exception e) {
                             e.printStackTrace();
                             errorInCsv = true;
@@ -164,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Initialization
             String line = "";
-
+            int lineCount = 0;
             // Initialization
             try {
                 // Step over headers
@@ -191,17 +193,28 @@ public class MainActivity extends AppCompatActivity {
                     carOwnerModel.setGender(data[8]);
                     carOwnerModel.setJob_title(data[9]);
                     carOwnerModel.setBio(data[10]);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tryAddingToCarList(carOwnerModel);
-                        }
-                    });
+                    tryAddingToCarList(carOwnerModel);
+                    lineCount++;
+                    double percent = ((double)lineCount/65500) *100;
+                    publishProgress((int)percent);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... values) {
+            super.onProgressUpdate(values);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int progress = values[0];
+                    progress = Math.min(progress, 100);
+                    filter_listView.setLoadingText(String.format("Loading %s%s",progress,"%"));
+                }
+            });
         }
 
         @Override

@@ -99,21 +99,17 @@
                 </HorizontalScrollView>
 
 
-                <HorizontalScrollView
-                    android:scrollbars="none"
-                    android:id="@+id/country_scroll"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
+                 <com.google.android.flexbox.FlexboxLayout
+                     android:layout_marginTop="10dp"
                         android:id="@+id/country_holder"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                     app:alignContent="flex_start"
+                     app:alignItems="flex_start"
+                     app:flexWrap="wrap"
+                       >
 
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    </com.google.android.flexbox.FlexboxLayout>
 
 
             </LinearLayout>
