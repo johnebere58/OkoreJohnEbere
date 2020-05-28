@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     private void tryAddingToCarList(CarOwnerModel carOwnerModel){
         for(int i=0;i<filterList.size();i++){
             FilterModel filterModel = new FilterModel();
-            
+
         }
     }
 
