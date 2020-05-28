@@ -76,6 +76,18 @@ public class MainActivity extends AppCompatActivity {
         requestForPermissions();
     }
 
+    private void requestForPermissions(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context,new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            },CODE_PERMISSION);
+        }else{
+            loadItems();
+        }
+    }
+
     public void clickBack(View v){
         onBackPressed();
     }
@@ -135,19 +147,6 @@ public class MainActivity extends AppCompatActivity {
         }
         filterListAdapter.notifyDataSetChanged();
     }
-
-    private void requestForPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context,new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            },CODE_PERMISSION);
-        }else{
-            loadItems();
-        }
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
