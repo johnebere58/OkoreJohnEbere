@@ -9,14 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@color/blue3"
-        android:paddingLeft="20dp"
         >
         <ImageView
-            android:layout_width="18dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_back"
             android:layout_gravity="center_vertical"
             android:tint="@color/white"
+            android:onClick="clickBack"
+            android:padding="15dp"
             />
         <View
             android:layout_width="10dp"
@@ -32,6 +33,18 @@
             android:fontFamily="@font/baloo_bold"
             />
     </LinearLayout>
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/no_file_tv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:text="Csv file not found"
+        android:background="@color/red"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        />
     <com.example.okorejohnebere.custom_views.CustomListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

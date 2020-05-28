@@ -139,6 +139,7 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
                     public void onClick(View v) {
                         ArrayList<CarOwnerModel> carList = filterModel.getCarList();
                         carList = carList==null?new ArrayList<CarOwnerModel>():carList;
+                        //Toast.makeText(mContext, String.valueOf(carList.size()), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(mContext, CarOwnersActivity.class);
                         intent.putParcelableArrayListExtra("data",carList);
                         mContext.startActivity(intent);

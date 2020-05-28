@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:text="Dry Cleaner"
                 android:textColor="@color/black"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:id="@+id/job_tv"
                 android:layout_marginBottom="10dp"
                 />
@@ -78,7 +78,7 @@
                    android:alpha=".5"
                    android:text="John@gmail.com"
                    android:textColor="@color/black"
-                   android:textSize="12sp"
+                   android:textSize="14sp"
                    android:id="@+id/email_tv"
                    />
 
@@ -103,7 +103,7 @@
                     android:alpha=".5"
                     android:text="Ghana"
                     android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:id="@+id/country_tv"
                     />
 
@@ -128,7 +128,7 @@
                     android:alpha=".5"
                     android:text="Lexus (2005)"
                     android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:layout_marginRight="10dp"
                     android:id="@+id/car_tv"
                     />

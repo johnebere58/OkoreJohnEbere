@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -49,6 +50,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     Context context;
+    @BindView(R.id.no_file_tv) TextView no_file_tv;
     @BindView(R.id.filter_listView) CustomListView filter_listView;
     FilterListAdapter filterListAdapter;
     ArrayList<FilterModel> filterList = new ArrayList<>();
@@ -65,10 +67,13 @@ public class MainActivity extends AppCompatActivity {
         filter_listView.getRecyclerView().setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
         filter_listView.getRecyclerView().setAdapter(filterListAdapter);
 
-
         loadItems();
 
         requestForPermissions();
+    }
+
+    public void clickBack(View v){
+        onBackPressed();
     }
 
     private void loadItems() {
@@ -178,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // If buffer is not empty
                 while ((line = reader.readLine()) != null) {
-//                Log.d("MyActivity","Line: " + line);
-                    // use comma as separator columns of CSV
                     String[] data = line.split(",");
                     // Read the data
                     final CarOwnerModel carOwnerModel = new CarOwnerModel();
@@ -222,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             filterListAdapter.notifyDataSetChanged();
             filter_listView.hideLoading();
+            if(noFileFound)no_file_tv.setVisibility(View.VISIBLE);
         }
 
         private void tryAddingToCarList(final CarOwnerModel carOwnerModel){
@@ -229,56 +233,70 @@ public class MainActivity extends AppCompatActivity {
                 FilterModel filterModel = filterList.get(i);
                 JSONArray countries = filterModel.getCountries();
                 JSONArray colors = filterModel.getColors();
+                String fullName = filterModel.getFullName();
+                String gender = filterModel.getGender();
 
-                String fullName = filterModel.getFullName().toLowerCase();
-                String firstName = carOwnerModel.getFirst_name().toLowerCase();
-                String lastName = carOwnerModel.getLast_name().toLowerCase();
-
-                if(!fullName.contains(firstName) && !fullName.contains(lastName))continue;
-
-                if(!filterModel.getGender().toLowerCase().
-                        equalsIgnoreCase(carOwnerModel.getGender().toLowerCase()))continue;
-
-                boolean countryExist = false;
-                for(int x=0;x<countries.length();x++){
-                    try {
-                        String country = countries.getString(x);
-                        if(country.toLowerCase().equalsIgnoreCase(carOwnerModel.getCountry())){
-                            countryExist=true;
+                if(fullName!=null) {
+                    String[] nameParts = fullName.split(" ");
+                    String firstName = carOwnerModel.getFirst_name().toLowerCase();
+                    String lastName = carOwnerModel.getLast_name().toLowerCase();
+                    boolean nameExist = false;
+                    for(String name : nameParts){
+                        if(name.trim().toLowerCase().equalsIgnoreCase(firstName)
+                           || name.trim().toLowerCase().equalsIgnoreCase(lastName)){
+                            nameExist=true;
                             break;
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                }
-                if(!countryExist && countries.length()!=0){
-                    //addToCarList(i,filterModel,carOwnerModel);
-                    continue;
+                    if(!nameExist)continue;
                 }
 
-                boolean colorExist = false;
-                for(int x=0;x<colors.length();x++){
-                    try {
-                        String color = colors.getString(x);
-                        if(color.toLowerCase().equalsIgnoreCase(carOwnerModel.getCar_color())){
-                            colorExist=true;
-                            break;
+                if(gender!=null) {
+                    if (!gender.toLowerCase().
+                            equalsIgnoreCase(carOwnerModel.getGender().toLowerCase())) continue;
+                }
+
+                if(countries!=null && countries.length()!=0) {
+                    boolean countryExist = false;
+                    for (int x = 0; x < countries.length(); x++) {
+                        try {
+                            String country = countries.getString(x);
+                            if (country.toLowerCase().equalsIgnoreCase(carOwnerModel.getCountry())) {
+                                countryExist = true;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    }
+                    if (!countryExist) {
+                        continue;
                     }
                 }
-                if(!colorExist && colors.length()!=0){
 
-                    continue;
+                if(colors!=null && colors.length()!=0) {
+                    boolean colorExist = false;
+                    for (int x = 0; x < colors.length(); x++) {
+                        try {
+                            String color = colors.getString(x);
+                            if (color.toLowerCase().equalsIgnoreCase(carOwnerModel.getCar_color())) {
+                                colorExist = true;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (!colorExist) {
+                        continue;
+                    }
                 }
 
                 ArrayList<CarOwnerModel> carList = filterModel.getCarList();
                 carList = carList==null?new ArrayList<CarOwnerModel>():carList;
                 carList.add(carOwnerModel);
                 filterModel.setCarList(carList);
-//            filterList.set(i,filterModel);
-                break;
+                return;
             }
         }
     }
