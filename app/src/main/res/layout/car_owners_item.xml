@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:ignore="MissingPrefix"
+    android:id="@+id/rootView">
+    <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentPadding="20dp"
+        >
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Emeka Eke"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:id="@+id/name_tv"
+                    android:fontFamily="@font/baloo_bold"
+                    android:layout_weight="1"
+                    android:layout_marginRight="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Male"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:id="@+id/gender_tv"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dry Cleaner"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:id="@+id/job_tv"
+                android:layout_marginBottom="10dp"
+                />
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <ImageView
+                   android:layout_width="15dp"
+                   android:layout_height="15dp"
+                   android:src="@mipmap/ic_email"
+                   android:tint="@color/blue3"
+                   android:layout_marginRight="10dp"
+                   />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:alpha=".5"
+                   android:text="John@gmail.com"
+                   android:textColor="@color/black"
+                   android:textSize="12sp"
+                   android:id="@+id/email_tv"
+                   />
+
+           </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@mipmap/ic_flag"
+                    android:tint="@color/black"
+                    android:alpha=".5"
+                    android:layout_marginRight="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha=".5"
+                    android:text="Ghana"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:id="@+id/country_tv"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@mipmap/ic_car"
+                    android:tint="@color/black"
+                    android:alpha=".5"
+                    android:layout_marginRight="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha=".5"
+                    android:text="Lexus (2005)"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:layout_marginRight="10dp"
+                    android:id="@+id/car_tv"
+                    />
+                <com.example.okorejohnebere.custom_views.CircleImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@color/yellow"
+                    android:id="@+id/car_color"
+                    />
+
+            </LinearLayout>
+
+
+           <androidx.cardview.widget.CardView
+               app:cardElevation="0dp"
+               android:layout_marginTop="10dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               app:cardCornerRadius="10dp"
+               app:cardBackgroundColor="@color/default_white"
+               >
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:paddingLeft="10dp"
+                   android:paddingRight="10dp"
+                   android:orientation="vertical"
+                   >
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Bio"
+                       android:textColor="@color/black"
+                       android:textSize="12sp"
+                       android:textStyle="bold"
+                       android:fontFamily="@font/baloo_bold"
+                       />
+                   <com.example.okorejohnebere.custom_views.ReadMoreTextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="I am a very good person"
+                       android:textColor="@color/black"
+                       android:textSize="12sp"
+                       android:id="@+id/bio_tv"
+                       android:fontFamily="@font/baloo"
+                       android:layout_marginBottom="5dp"
+                       android:alpha=".8"
+                       />
+
+               </LinearLayout>
+
+           </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

@@ -1,0 +1,143 @@
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recyclerView"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <FrameLayout
+        android:background="@color/white"
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/loading_indicator"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/AVLoadingIndicatorView"
+            app:indicatorColor="@color/blue3"
+            app:indicatorName="PacmanIndicator"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:id="@+id/retry_layout"
+        android:background="?attr/selectableItemBackground"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+            <ImageView
+                android:layout_marginBottom="10dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@mipmap/ic_no_internet"
+                android:clickable="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:tint="@color/blue0"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="No Internet Connectivity"
+                android:layout_gravity="center"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:fontFamily="@font/baloo_bold"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:alpha=".6"
+                android:gravity="center"
+                android:text="Tap to Retry"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="12sp" />
+
+
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:id="@+id/empty_layout"
+        android:clickable="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/white">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/ic_empty"
+                android:tint="@color/blue3"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                />
+
+
+            <TextView
+
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="Nothing to Display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:alpha=".4"
+                android:textSize="18sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:fontFamily="@font/baloo_bold"
+                android:lineSpacingExtra="8dp"
+                />
+            <TextView
+                android:id="@+id/reload_tv"
+                android:fontFamily = "@font/baloo"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="Tap to reload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:alpha=".4"
+                android:textSize="15sp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+
+                />
+
+
+        </LinearLayout>
+
+
+    </FrameLayout>
+</FrameLayout>
