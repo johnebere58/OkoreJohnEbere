@@ -8,11 +8,13 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.okorejohnebere.R;
 import com.example.okorejohnebere.custom_views.CircleImageView;
+import com.example.okorejohnebere.models.CarOwnerModel;
 import com.example.okorejohnebere.models.FilterModel;
 
 import org.json.JSONArray;
@@ -132,7 +134,9 @@ public class FilterListAdapter extends BaseAdapter<FilterListAdapter.ViewHolder>
                     @Override
                     public void onClick(View v) {
 //                        mContext.startActivity(new Intent(mContext,CarOwnersActivity.class));
-
+                        ArrayList<CarOwnerModel> carList = filterModel.getCarList();
+                        carList = carList==null?new ArrayList<CarOwnerModel>():carList;
+                        Toast.makeText(mContext, String.valueOf(carList.size()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

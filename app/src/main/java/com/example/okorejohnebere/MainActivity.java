@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +29,7 @@ import com.example.okorejohnebere.models.FilterModel;
 import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -36,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         try {
-                            readCsv();
+                            new FilterTask().execute();
                         } catch (Exception e) {
                             e.printStackTrace();
                             errorInCsv = true;
@@ -123,64 +127,6 @@ public class MainActivity extends AppCompatActivity {
         filterListAdapter.notifyDataSetChanged();
     }
 
-    private void readCsv() throws Exception {
-        // Read the raw csv file
-        File file = new File(Environment.getExternalStorageDirectory()+"/Decagon/car_ownsers_data.csv");
-        if(!file.exists()){
-            noFileFound = true;
-            filter_listView.hideLoading();
-            return;
-        }
-        InputStream is =  new FileInputStream(file);
-        // Reads text from character-input stream, buffering characters for efficient reading
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8")));
-
-        // Initialization
-        String line = "";
-
-        // Initialization
-        try {
-            // Step over headers
-            try {
-                reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // If buffer is not empty
-            while ((line = reader.readLine()) != null) {
-                Log.d("MyActivity","Line: " + line);
-                // use comma as separator columns of CSV
-                String[] data = line.split(",");
-                // Read the data
-                CarOwnerModel carOwnerModel = new CarOwnerModel();
-                carOwnerModel.setFirst_name(data[1]);
-                carOwnerModel.setLast_name(data[2]);
-                carOwnerModel.setEmail(data[3]);
-                carOwnerModel.setCountry(data[4]);
-                carOwnerModel.setCar_model(data[5]);
-                carOwnerModel.setCar_model_year(data[6]);
-                carOwnerModel.setCar_color(data[7]);
-                carOwnerModel.setGender(data[8]);
-                carOwnerModel.setJob_title(data[9]);
-                carOwnerModel.setBio(data[10]);
-                tryAddingToCarList(carOwnerModel);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        filter_listView.hideLoading();
-    }
-
-    private void tryAddingToCarList(CarOwnerModel carOwnerModel){
-        for(int i=0;i<filterList.size();i++){
-            FilterModel filterModel = new FilterModel();
-
-        }
-    }
-
     private void requestForPermissions(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -196,5 +142,132 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class FilterTask extends AsyncTask<Void, Integer,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            File file = new File(Environment.getExternalStorageDirectory()+"/Decagon/car_ownsers_data.csv");
+            if(!file.exists()){
+                noFileFound = true;
+                filter_listView.hideLoading();
+                return null;
+            }
+            InputStream is = null;
+            try {
+                is = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            // Reads text from character-input stream, buffering characters for efficient reading
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, Charset.forName("UTF-8")));
+
+            // Initialization
+            String line = "";
+
+            // Initialization
+            try {
+                // Step over headers
+                try {
+                    reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // If buffer is not empty
+                while ((line = reader.readLine()) != null) {
+//                Log.d("MyActivity","Line: " + line);
+                    // use comma as separator columns of CSV
+                    String[] data = line.split(",");
+                    // Read the data
+                    final CarOwnerModel carOwnerModel = new CarOwnerModel();
+                    carOwnerModel.setFirst_name(data[1]);
+                    carOwnerModel.setLast_name(data[2]);
+                    carOwnerModel.setEmail(data[3]);
+                    carOwnerModel.setCountry(data[4]);
+                    carOwnerModel.setCar_model(data[5]);
+                    carOwnerModel.setCar_model_year(data[6]);
+                    carOwnerModel.setCar_color(data[7]);
+                    carOwnerModel.setGender(data[8]);
+                    carOwnerModel.setJob_title(data[9]);
+                    carOwnerModel.setBio(data[10]);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tryAddingToCarList(carOwnerModel);
+                        }
+                    });
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            filterListAdapter.notifyDataSetChanged();
+            filter_listView.hideLoading();
+        }
+
+        private void tryAddingToCarList(final CarOwnerModel carOwnerModel){
+            for(int i=0;i<filterList.size();i++){
+                FilterModel filterModel = filterList.get(i);
+                JSONArray countries = filterModel.getCountries();
+                JSONArray colors = filterModel.getColors();
+
+                String fullName = filterModel.getFullName().toLowerCase();
+                String firstName = carOwnerModel.getFirst_name().toLowerCase();
+                String lastName = carOwnerModel.getLast_name().toLowerCase();
+
+                if(!fullName.contains(firstName) && !fullName.contains(lastName))continue;
+
+                if(!filterModel.getGender().toLowerCase().
+                        equalsIgnoreCase(carOwnerModel.getGender().toLowerCase()))continue;
+
+                boolean countryExist = false;
+                for(int x=0;x<countries.length();x++){
+                    try {
+                        String country = countries.getString(x);
+                        if(country.toLowerCase().equalsIgnoreCase(carOwnerModel.getCountry())){
+                            countryExist=true;
+                            break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(!countryExist && countries.length()!=0){
+                    //addToCarList(i,filterModel,carOwnerModel);
+                    continue;
+                }
+
+                boolean colorExist = false;
+                for(int x=0;x<colors.length();x++){
+                    try {
+                        String color = colors.getString(x);
+                        if(color.toLowerCase().equalsIgnoreCase(carOwnerModel.getCar_color())){
+                            colorExist=true;
+                            break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(!colorExist && colors.length()!=0){
+
+                    continue;
+                }
+
+                ArrayList<CarOwnerModel> carList = filterModel.getCarList();
+                carList = carList==null?new ArrayList<CarOwnerModel>():carList;
+                carList.add(carOwnerModel);
+                filterModel.setCarList(carList);
+//            filterList.set(i,filterModel);
+                break;
+            }
+        }
+    }
 
 }
