@@ -1,8 +1,10 @@
 package com.example.okorejohnebere;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -12,7 +14,10 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<FilterModel> filterList = new ArrayList<>();
     boolean noFileFound = false;
     boolean errorInCsv = false;
+    final int CODE_PERMISSION = 34;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +68,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.filter_page);
         ButterKnife.bind(this);
         context = this;
+
         filterListAdapter = new FilterListAdapter(this,filterList);
         filter_listView.getRecyclerView().setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
         filter_listView.getRecyclerView().setAdapter(filterListAdapter);
-
-        loadItems();
 
         requestForPermissions();
     }
@@ -91,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         try {
                             new FilterTask().execute();
-//                            filterListAdapter.notifyDataSetChanged();
-//                            filter_listView.hideLoading();
                         } catch (Exception e) {
                             e.printStackTrace();
                             errorInCsv = true;
@@ -135,19 +138,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestForPermissions(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED||
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions((Activity) context,new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                },34);
-            }
+            ActivityCompat.requestPermissions((Activity) context,new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            },CODE_PERMISSION);
+        }else{
+            loadItems();
         }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==CODE_PERMISSION){
+           for(int i : grantResults){
+               if(i!=PackageManager.PERMISSION_GRANTED){
+                   Toast.makeText(context, "Read Permission is required for this App", Toast.LENGTH_SHORT).show();
+                   onBackPressed();
+                   return;
+               }
+           }
+           loadItems();
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
     class FilterTask extends AsyncTask<Void, Integer,Void> {
 
         @Override
