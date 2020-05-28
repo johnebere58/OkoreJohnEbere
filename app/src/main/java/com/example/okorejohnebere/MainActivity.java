@@ -27,7 +27,6 @@ import com.example.okorejohnebere.adapters.FilterListAdapter;
 import com.example.okorejohnebere.custom_views.CustomListView;
 import com.example.okorejohnebere.models.CarOwnerModel;
 import com.example.okorejohnebere.models.FilterModel;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;

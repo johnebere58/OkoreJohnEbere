@@ -69,7 +69,8 @@
                    android:layout_width="15dp"
                    android:layout_height="15dp"
                    android:src="@mipmap/ic_email"
-                   android:tint="@color/blue3"
+                   android:tint="@color/black"
+                   android:alpha=".5"
                    android:layout_marginRight="10dp"
                    />
                <TextView
